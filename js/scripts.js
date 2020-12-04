@@ -10,6 +10,9 @@ eventListener();
 function eventListener() {
     //Botón para crear proyectos
     document.querySelector('.crear-proyecto a').addEventListener('click', nuevoProyecto);
+
+    //Botón para nueva tarea
+    document.querySelector('.nueva-tarea').addEventListener('click', agregarTarea);
     
 }
 
@@ -97,6 +100,7 @@ function guardarProyectoDB(nombreProyecto){
     xhr.send(datos);
 }
 
+/* Agregar proyecto a la pagina */ /* Función con guardarProyectoDB */
 function agregarProyecto(nombre, id){
     var nuevoProyecto = document.createElement('li');
     nuevoProyecto.innerHTML =  `
@@ -105,4 +109,91 @@ function agregarProyecto(nombre, id){
         </a>
     `;
     listaProyectos.appendChild(nuevoProyecto);
+}
+
+
+/* Agregar tarea a la pagina */ /* Función con agregarTarea */
+
+function agregarTareaPagina(tarea, id){
+    console.log("Agregando " + tarea);
+    /* Construir el template */
+    var nuevaTarea = document.createElement('li');
+    /* agregamos ID */
+    nuevaTarea.id = 'tarea:'+id;
+    /* Agregar la clase */
+    nuevaTarea.classList.add('tarea');
+    /* Construir el li*/
+    nuevaTarea.innerHTML = `
+        <p> ${tarea} </p>
+        <div class="acciones">
+            <i class="far fa-check-circle"></i>
+            <i class="fas fa-trash"></i>
+        </div>
+    `;
+
+    /* Agregarlo al DOM */
+    var listado = document.querySelector('.listado-pendientes ul');
+    listado.append(nuevaTarea);
+
+    /* Limpiar formulario */
+    document.querySelector('.nombre-tarea').value = '';
+
+}
+
+/* Función para Agregar tarea */
+function agregarTarea(e) {
+    e.preventDefault();
+    var tarea = document.querySelector('.nombre-tarea').value;
+    /* console.log("Click en agregar " + tarea); */
+    if(tarea === null || tarea === ''){
+        Swal.fire({
+            type: 'error',
+            title: 'Campo vacío',
+            text: 'Llenar campo'
+            /* footer: '<a href>Why do I have this issue?</a>' */ 
+         })
+    } else {
+        /* El campo tiene algo */
+        /* Crear fonrmData */
+        var id = document.querySelector('#id_proy').value;
+        var datos = new FormData();
+        datos.append('tarea', tarea);
+        datos.append('accion','crear');
+        datos.append('id', id);
+        /* LLamado Ajax */
+        /* Crear la llamada Ajax */
+        var xhr = new XMLHttpRequest();
+        /* Abrir la conexión */
+        xhr.open('POST', 'inc/modelos/modelo-tareas.php', true);
+        /* Ejecutar y respuesta */
+        xhr.onload = function(){
+            if(this.status === 200) {
+                var respuesta = JSON.parse(xhr.responseText);
+                //Comprobar los datos que regresa /* console.log(respuesta); */
+                var tarea = respuesta.tarea,
+                    title = respuesta.title,
+                    tipo = respuesta.respuesta,
+                    id = respuesta.id_insertado;
+
+                if(respuesta.accion === 'crear' && tipo === 'success') {
+                    /* Función para agrega la tarea a la pagina */
+                    agregarTareaPagina(tarea, id);
+
+                    /* ALerta de que se guardo */
+                    Swal.fire({
+                        type: tipo,
+                        title: title,
+                        text: 'Tarea ' + tarea + ' - Agregada'
+                        /* footer: '<a href>Why do I have this issue?</a>' */ 
+                    
+                    })
+                }
+            }
+        }
+        /* Enviar consulta */
+        xhr.send(datos);
+
+    }
+
+    return false;
 }

@@ -10,7 +10,8 @@
     echo '</pre>'; */
 
     /* Comprobar si estámos en un proyecto con el id */
-    $titulo = "Seleccione uno";
+    $titulo = "";
+    $proye = "Seleccione uno";
     if(isset ($_GET['id'])){
         /* Solo saber si se selecciono algún id */ /* echo "Si - " . $_GET['id']; */
         $id_proy = $_GET['id'];
@@ -21,7 +22,8 @@
             /* echo "<pre>";
                 var_dump($nom);
             echo "</pre>"; */
-            $titulo = $nom["proy_Nombre"];
+            $titulo = "Proyecto Actual:";
+            $proye = $nom["proy_Nombre"];
         }
     }
 
@@ -34,9 +36,9 @@
     ?>
 
     <main class="contenido-principal">
-        <h1> Proyecto Actual: 
+        <h1> <?php echo $titulo; ?> 
 
-            <span> <?php echo $titulo; ?> </span>
+            <span> <?php echo $proye; ?> </span>
 
         </h1>
 
@@ -46,7 +48,7 @@
                 <input type="text" placeholder="Nombre Tarea" class="nombre-tarea"> 
             </div>
             <div class="campo enviar">
-                <input type="hidden" id="<?php echo $id_proy; ?>" value="id_proyecto">
+                <input type="hidden" id="id_proy" value="<?php echo $id_proy; ?>" value="id_proyecto">
                 <input type="submit" class="boton nueva-tarea" value="Agregar">
             </div>
         </form>
@@ -57,13 +59,13 @@
 
         <div class="listado-pendientes">
             <ul>
-                                <!-- Agregar el id al elemento de la BD proyecto -->
-                <li id="tarea:<?php echo $tarea['id'] ?>" class="tarea">
-                <p>Cambiar el Logotipo</p>
+                <!-- Agregar el id al elemento de la BD proyecto -->
+                <li id="tarea" class="tarea">
+                    <p>Cambiar el Logotipo</p>
                     <div class="acciones">
                         <i class="far fa-check-circle"></i>
                         <i class="fas fa-trash"></i>
-                    </div>
+                  </div>
                 </li>  
             </ul>
         </div>
