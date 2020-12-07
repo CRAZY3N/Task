@@ -36,5 +36,18 @@
         }
     }
 
+    /* Obtener tareas del proyecto */
+    function obtenerTareasProy($pId = null){
+        /* Conexión a la BD */
+        include 'conexion.php';
+        try {
+            return $conn -> query("SELECT Tar_Id, Tar_Nombre, Tar_Estado FROM tareas WHERE Tar_ProyId = {$pId}");
+            /* $conn -> close(); */
+        } catch (Exception $e){
+            echo "Error! " . $e -> getMessage();
+            return false;
+        }
+    }
+
 
 ?>

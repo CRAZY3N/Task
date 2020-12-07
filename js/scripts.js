@@ -13,7 +13,73 @@ function eventListener() {
 
     //Botón para nueva tarea
     document.querySelector('.nueva-tarea').addEventListener('click', agregarTarea);
+
+    /* Botones para las acciones de las tareas */
+    document.querySelector('.listado-pendientes').addEventListener('click', accionesTarea);
     
+}
+
+/* Accines tareas */
+/* Cambiando el estado de tareas o elimina */
+
+function accionesTarea(e){
+    /* console.log(e.target); */ /* Saber a que le estamos dando click */
+    if(e.target.classList.contains('fa-check-circle')){
+        if(e.target.classList.contains('completo')) {
+            e.target.classList.remove('completo');
+            cambiarEstadoTar(e.target, 0);
+        } else {
+            e.target.classList.add('completo');
+            cambiarEstadoTar(e.target, 1);
+        }
+    } else if(e.target.classList.contains('fa-trash')) {
+        console.log("Borrar");
+
+    }
+}
+
+/* Cambiar estado de tarea */
+function cambiarEstadoTar(tarea, estado){
+    /* console.log(tarea.parentElement.parentElement.id.split(':')); */
+    var idTarea = tarea.parentElement.parentElement.id.split(':')[1];
+    /* console.log(idTarea); */
+
+    /* Información */
+    var datos = new FormData();
+    datos.append('id', idTarea);
+    datos.append('accion', 'actualizar');
+    datos.append('estado', estado);
+
+    let texto;
+    if(estado === 1) {
+        texto = "Tarea completada";
+    } else {
+        texto = "Tarea no completada";
+    }
+
+    /* Llamado Ajax */
+    var xhr = new XMLHttpRequest();
+    /* Abrir conexión */
+    xhr.open('POST', 'inc/modelos/modelo-tareas.php', true);
+    /* Recibir estatus */
+    xhr.onload = function() {
+        if(this.status === 200) {
+            let respuesta = JSON.parse(xhr.responseText);
+            console.log(JSON.parse(xhr.responseText));
+            if(respuesta.respuesta === 'success') {
+                Swal.fire({
+                    type: respuesta.respuesta,
+                    title: respuesta.title,
+                    text: texto
+                    /* footer: '<a href>Why do I have this issue?</a>' */ 
+                })
+            }
+        }
+    }
+
+    /* Envíar datos */
+    xhr.send(datos);
+
 }
 
 /* Crear proyecto */
@@ -74,7 +140,7 @@ function guardarProyectoDB(nombreProyecto){
                         title: title,
                         text: 'EL proyecto: ' + proyecto + ' - Creado'
                         /* footer: '<a href>Why do I have this issue?</a>' */ 
-                 })
+                    })
                  .then(resultado => {
                     if(resultado.value){
                         window.location.href = 'index.php?id=' + id;
@@ -113,7 +179,6 @@ function agregarProyecto(nombre, id){
 
 
 /* Agregar tarea a la pagina */ /* Función con agregarTarea */
-
 function agregarTareaPagina(tarea, id){
     console.log("Agregando " + tarea);
     /* Construir el template */

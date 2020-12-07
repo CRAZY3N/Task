@@ -60,13 +60,37 @@
         <div class="listado-pendientes">
             <ul>
                 <!-- Agregar el id al elemento de la BD proyecto -->
-                <li id="tarea" class="tarea">
-                    <p>Cambiar el Logotipo</p>
-                    <div class="acciones">
-                        <i class="far fa-check-circle"></i>
-                        <i class="fas fa-trash"></i>
-                  </div>
-                </li>  
+                <?php
+                    if(isset($id_proy)){
+                        $tareas = obtenerTareasProy($id_proy);
+                        /* echo '<pre>'; */
+                        if($tareas -> num_rows > 0) {
+                            foreach($tareas as $tarea){
+                            /* var_dump($tarea); */ ?>
+                            <li id="<?php echo 't:' . $tarea['Tar_Id']; ?>" class="tarea">
+                                <p><?php echo $tarea['Tar_Nombre']; ?></p>
+                                <div class="acciones">
+                                    <i class="far fa-check-circle <?php echo ($tarea['Tar_Estado'] === '1' ? 'completo' : '') ?>"></i>
+                                    <i class="fas fa-trash"></i>
+                                </div>
+                            </li>
+                            
+             <?php          }
+                        } else {
+                            echo '<p>No tiene tareas </p>';
+                        }
+                    /* echo '</pre>'; */
+                    }
+                ?>
+                <!-- Agregar el id al elemento de la BD proyecto -->
+                    <!-- <li id="tarea" class="tarea">
+                        <p>Cambiar el Logotipo</p>
+                        <div class="acciones">
+                            <i class="far fa-check-circle"></i>
+                            <i class="fas fa-trash"></i>
+                    </div>
+                    </li> -->  
+                
             </ul>
         </div>
     </main>
