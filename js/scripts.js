@@ -33,9 +33,64 @@ function accionesTarea(e){
             cambiarEstadoTar(e.target, 1);
         }
     } else if(e.target.classList.contains('fa-trash')) {
-        console.log("Borrar");
+        
+        Swal.fire({
+            title: '¿Estás seguro(a)?',
+            text: "No se puede recuperar!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#cc0000',
+            confirmButtonText: 'Si, Borrar!',
+            cancelButtonText: 'Cancelar'
+          }).then((result) => {
+            if (result.value) {
+
+                /* Borrar de la DB */ /* console.log("Borrar de la DB"); */
+                /* console.log(e.target.parentElement.parentElement.id); */
+                let elemId = e.target.parentElement.parentElement.id.split(':');
+                elemId = elemId[1];
+                
+                eliminarTareaBD(elemId);
+
+                /* Borrar del DOM */ /* console.log("Borrar del DOM"); */
+                /* console.log(e.target.parentElement.parentElement); */
+                let elem = e.target.parentElement.parentElement; /* Tomar el elemento  */
+                elem.parentElement.removeChild(elem);  /* eliminar el elemento desde el padre */
+                Swal.fire(
+                  'Eliminado!',
+                  'La tarea se ha eliminado.',
+                  'success'
+                )
+            }
+          })
+
 
     }
+}
+
+/* Eliminar tarea de la DB */
+function eliminarTareaBD(id){
+    let datos = new FormData();
+                /* Crear datos para ajax */
+                datos.append('accion', 'eliminar');
+                datos.append('id', id);
+
+                /* Crear elemento */
+                let xhr = new XMLHttpRequest();
+
+                /* Abrir conexión */
+                xhr.open('POST', 'inc/modelos/modelo-tareas.php', true);
+
+                /* Recibir respuesta */
+                xhr.onload = function(){
+                    if(this.status === 200){
+                        /* let respuesta = JSON.parse(xhr.responseText); */
+                        /* console.log(JSON.parse(xhr.responseText)); */
+                    }
+                }
+                /* Envíar datos */
+                xhr.send(datos);
 }
 
 /* Cambiar estado de tarea */
@@ -65,14 +120,16 @@ function cambiarEstadoTar(tarea, estado){
     xhr.onload = function() {
         if(this.status === 200) {
             let respuesta = JSON.parse(xhr.responseText);
-            console.log(JSON.parse(xhr.responseText));
+            /* console.log(JSON.parse(xhr.responseText)); */
             if(respuesta.respuesta === 'success') {
                 Swal.fire({
+                    position: 'top-center',
                     type: respuesta.respuesta,
                     title: respuesta.title,
-                    text: texto
-                    /* footer: '<a href>Why do I have this issue?</a>' */ 
-                })
+                    text: texto,
+                    showConfirmButton: false,
+                    timer: 1500
+                  })
             }
         }
     }
@@ -180,7 +237,7 @@ function agregarProyecto(nombre, id){
 
 /* Agregar tarea a la pagina */ /* Función con agregarTarea */
 function agregarTareaPagina(tarea, id){
-    console.log("Agregando " + tarea);
+    /* console.log("Agregando " + tarea); */
     /* Construir el template */
     var nuevaTarea = document.createElement('li');
     /* agregamos ID */

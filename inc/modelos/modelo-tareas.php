@@ -85,6 +85,38 @@ if($accion === 'actualizar') {
     echo json_encode($respuesta);
 }
 
+if($accion === 'eliminar') {
+
+    $idE = (int) $_POST['id'];
+
+    /* Incluir conexión */
+    include ('../funciones/conexion.php');
+
+    try {
+
+        $stmt = $conn -> prepare ("DELETE FROM tareas WHERE Tar_Id = ?");
+        $stmt -> bind_param('i', $idE);
+        $stmt -> execute();
+
+        if($stmt -> affected_rows > 0) {
+            $respuesta = array(
+                'respuesta' => 'success'
+            );
+        }
+
+        $stmt -> close();
+        $conn -> close();
+
+    } catch (Exception $e) {
+        $respuesta = array(
+            'respuesta' => 'error',
+            'mensaje' => $e.getMessage()
+        );
+    }
+
+    echo json_encode($_POST);
+}
+
 if($accion === 'modificar') {
 
 }
