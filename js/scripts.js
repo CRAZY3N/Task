@@ -8,6 +8,10 @@ eventListener();
 
 /* Declarar los eventos que escuchara */
 function eventListener() {
+
+    /* Document ready */
+    document.addEventListener('DOMContentLoaded', actualizarProgreso);
+
     //Botón para crear proyectos
     document.querySelector('.crear-proyecto a').addEventListener('click', nuevoProyecto);
 
@@ -19,6 +23,37 @@ function eventListener() {
     
 }
 
+/* Actulizar progreso */
+function actualizarProgreso(){
+    /* Obtener todas las tareas */
+    const tareas = document.querySelectorAll('.tarea').length;
+
+    /* obtener las tareas completas */
+    const tareasCom = document.querySelectorAll('i.completo').length;
+
+    /* Determinar el avance */
+    const avance = (100 / tareas) * tareasCom;
+    /* console.log(avance); */
+
+    /* Agregar el avance */
+    const barra = document.querySelector('#porcentaje');
+    /* console.log(barra); */
+    barra.style.width = avance + '%';
+
+    /* Si barra es el 100% */
+    if(avance === 100) {
+        Swal.fire({
+            position: 'top-center',
+            type: 'success',
+            title: "100% de tareas",
+            text: "Proyecto finalizado",
+            showConfirmButton: false,
+            timer: 1500
+          })
+    }
+
+}
+
 /* Accines tareas */
 /* Cambiando el estado de tareas o elimina */
 
@@ -28,9 +63,13 @@ function accionesTarea(e){
         if(e.target.classList.contains('completo')) {
             e.target.classList.remove('completo');
             cambiarEstadoTar(e.target, 0);
+            /* Actualizar tare */
+            actualizarProgreso();
         } else {
             e.target.classList.add('completo');
             cambiarEstadoTar(e.target, 1);
+            /* Actualizar tare */
+            actualizarProgreso();
         }
     } else if(e.target.classList.contains('fa-trash')) {
         
@@ -57,6 +96,10 @@ function accionesTarea(e){
                 /* console.log(e.target.parentElement.parentElement); */
                 let elem = e.target.parentElement.parentElement; /* Tomar el elemento  */
                 elem.parentElement.removeChild(elem);  /* eliminar el elemento desde el padre */
+
+                /* Actualizar tare */
+                actualizarProgreso();
+
                 Swal.fire(
                   'Eliminado!',
                   'La tarea se ha eliminado.',
@@ -85,6 +128,8 @@ function eliminarTareaBD(id){
                 /* Recibir respuesta */
                 xhr.onload = function(){
                     if(this.status === 200){
+                        /* Actualizar tare */
+                        actualizarProgreso();
                         /* let respuesta = JSON.parse(xhr.responseText); */
                         /* console.log(JSON.parse(xhr.responseText)); */
                     }
@@ -309,6 +354,9 @@ function agregarTarea(e) {
                         /* footer: '<a href>Why do I have this issue?</a>' */ 
                     
                     })
+
+                    /* Actualizar tare */
+                    actualizarProgreso();
                 }
             }
         }
